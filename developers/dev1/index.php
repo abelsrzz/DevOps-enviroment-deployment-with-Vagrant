@@ -22,7 +22,7 @@
 </head>
 <body>
     <main>
-        <?php echo "<h1>This is Dev2 page.</h1>"; ?>
+        <?php echo "<h1>This is Dev1 page.</h1>"; ?>
     </main>
 </body>
 </html>

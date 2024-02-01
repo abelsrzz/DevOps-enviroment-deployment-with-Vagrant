@@ -77,7 +77,7 @@ Vagrant.configure("2") do |config|
 				sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
 				rm -f packages.microsoft.gpg
 
-				apt install -y code
+				apt update && apt install -y code
 
 				mkdir /media/developers
 
@@ -85,9 +85,10 @@ Vagrant.configure("2") do |config|
 				mount -av
 
 				setxkbmap -layout es
-				echo "code" >> /home/*/.profile
 				echo "Instalando entorno gráfico, este proceso puede tardar varios minutos..."
 				tasksel install Debian desktop environment GNOME
+
+				cp /vagrant/conf/startx/daemon.conf /etc/gdm3/daemon.conf
 			SHELL
 		end
 	end
