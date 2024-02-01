@@ -1,0 +1,5 @@
+zone "abel.org" {
+    type master;
+    file "/etc/bind/db.abel.org";
+};
+

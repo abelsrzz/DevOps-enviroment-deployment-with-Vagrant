@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  php-fpm:
+    image: php:7.4-fpm
+    volumes:
+      - /vagrant/developers/dev1:/var/www/dev1
+      - /vagrant/developers/dev2:/var/www/dev2
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - /vagrant/conf/nginx/dev1.conf:/etc/nginx/conf.d/dev1.conf
+      - /vagrant/conf/nginx/dev2.conf:/etc/nginx/conf.d/dev2.conf
+    depends_on:
+      - php-fpm
