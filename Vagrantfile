@@ -1,14 +1,16 @@
 Vagrant.configure("2") do |config|
-  config.vm.define "servidor" do |subconfig|
-    	subconfig.vm.box = "debian/bullseye64"
+	config.vm.define "servidor" do |subconfig|
+		subconfig.vm.box = "debian/bullseye64"
         subconfig.vm.hostname = "servidor"
         subconfig.vm.network :private_network, ip: "192.168.1.10", virtualbox__intnet: "IAWlan"
 		subconfig.vm.network "forwarded_port", guest: 80, host: 80
-	subconfig.vm.network :public_network, type: "dhcp"
+		subconfig.vm.network :public_network, type: "dhcp"
 
 		subconfig.vm.provider :virtualbox do |vb|
 			vb.name = "servidor"
 			vb.gui = false
+			vb.cpus = 4
+			vb.memory = 4096
 		end
 		subconfig.vm.provision "shell", inline: <<-SHELL
 			apt update && apt install -y docker.io docker-compose samba
@@ -55,5 +57,38 @@ Vagrant.configure("2") do |config|
 		subconfig.vm.provision "shell", run: "always", inline: "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf"
 		
 	end
-end
+	(1..2).each do |n|  
+		config.vm.define "dev#{n}", autostart: false do |dev|
+			dev.vm.box = "debian/bullseye64"
+			dev.vm.hostname = "dev#{n}"
+			dev.vm.network "private_network", type: "dhcp", virtualbox__intnet: "IAWlan"
+		
+			dev.vm.provider :virtualbox do |vb|
+				vb.name = "dev#{n}"
+				vb.cpus = 3
+				vb.memory = 4096
+				vb.gui = true
+			end
+			dev.vm.provision "shell", inline: <<-SHELL
+				apt update && apt install -y expect xdotool tasksel cifs-utils psmisc wget apt-transport-https
 
+				wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+				sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+				sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+				rm -f packages.microsoft.gpg
+
+				apt install -y code
+
+				mkdir /media/developers
+
+				echo "//samba.abel.org/developers /media/developers cifs user=developers,pass=developers 0 0" >> /etc/fstab
+				mount -av
+
+				setxkbmap -layout es
+				echo "code" >> /home/*/.profile
+				echo "Instalando entorno gráfico, este proceso puede tardar varios minutos..."
+				tasksel install Debian desktop environment GNOME
+			SHELL
+		end
+	end
+end
