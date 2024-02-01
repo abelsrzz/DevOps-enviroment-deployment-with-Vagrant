@@ -11,3 +11,5 @@ $TTL    604800
 dev1	IN	CNAME	abel.org.
 dev2	IN	CNAME	abel.org.
 samba	IN	CNAME	abel.org.
+dhcp	IN	CNAME	abel.org.
+ns	IN	CNAME	abel.org.

@@ -70,6 +70,16 @@ Vagrant.configure("2") do |config|
 				vb.gui = true
 			end
 			dev.vm.provision "shell", inline: <<-SHELL
+				addgroup developers
+				useradd -m -c /bin/bash -p dev1 -g developers dev1
+				useradd -m -c /bin/bash -p dev2 -g developers dev2
+
+				cp -rf /etc/skel/ /home/dev1/
+				chown -R dev1:dev1 /home/dev1
+				
+				cp -rf /etc/skel/ /home/dev2/
+				chown -R dev2:dev2 /home/dev2
+
 				apt update && apt install -y expect xdotool tasksel cifs-utils psmisc wget apt-transport-https
 
 				wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
@@ -89,6 +99,17 @@ Vagrant.configure("2") do |config|
 				tasksel install Debian desktop environment GNOME
 
 				cp /vagrant/conf/startx/daemon.conf /etc/gdm3/daemon.conf
+			SHELL
+			dev.vm.privision "shell", run: "always", inline: <<-SHELL
+				for usuario in /home/*; do
+					if [ -d "$usuario" ]; then
+						echo "code" >> "$usuario/.profile"
+						chown $(basename "$usuario"):"$(id -gn $(basename "$usuario"))" "$usuario/.profile"
+						
+						echo "exec startx" > "$usuario/.xinitrc"
+						chown $(basename "$usuario"):"$(id -gn $(basename "$usuario"))" "$usuario/.xinitrc"
+					fi
+				done
 			SHELL
 		end
 	end
