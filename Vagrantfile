@@ -76,7 +76,7 @@ Vagrant.configure("2") do |config|
 
 				cp -rf /etc/skel/ /home/dev1/
 				chown -R dev1:dev1 /home/dev1
-				
+
 				cp -rf /etc/skel/ /home/dev2/
 				chown -R dev2:dev2 /home/dev2
 
@@ -100,7 +100,7 @@ Vagrant.configure("2") do |config|
 
 				cp /vagrant/conf/startx/daemon.conf /etc/gdm3/daemon.conf
 			SHELL
-			dev.vm.privision "shell", run: "always", inline: <<-SHELL
+			dev.vm.provision "shell", run: "always", inline: <<-SHELL
 				for usuario in /home/*; do
 					if [ -d "$usuario" ]; then
 						echo "code" >> "$usuario/.profile"
