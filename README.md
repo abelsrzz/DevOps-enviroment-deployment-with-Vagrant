@@ -7,7 +7,7 @@
 - Servidor DHCP
 - Servidor DNS
 - Servidor Samba
-- Servidor Web (Apache2)
+- Servidor Web (Nginx)
 
 El servidor DNS apunta los dominios:
 
